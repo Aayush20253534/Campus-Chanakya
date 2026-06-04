@@ -65,6 +65,18 @@ class StudentUpdateSchema(BaseModel):
     address: Optional[str] = None
     enrollment_date: Optional[str] = None
 
+class StudentSignupSchema(BaseModel):
+    reg_no: str
+    name: str
+    email: str
+    password: str
+    gender: str
+    dob: str
+    department: str
+    section: str
+    year: int
+    hostel: Optional[str] = "Not Assigned"
+    
 class FeedPostSchema(BaseModel):
     title: str
     content: str
@@ -118,13 +130,21 @@ class TimetableSchema(BaseModel):
     teacher_id: str
     room_number: str
 
+# ─────────────────────────────────────────────────────────────────────────────
+# FIX 1: CORS — support multiple comma-separated origins from .env
+# Set FRONTEND_URL=http://localhost:5173,https://yourdomain.com in .env
+# ─────────────────────────────────────────────────────────────────────────────
+_raw_origins = os.getenv("FRONTEND_URL", "http://localhost:5173")
+ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 def get_db_connection():
     conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
     conn.row_factory = sqlite3.Row
@@ -143,7 +163,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), conn: sqlite3.Connecti
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    # --- NEW: Immediate return for Admin ---
     if role == "admin":
         return {
             "id": "admin", 
@@ -155,7 +174,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), conn: sqlite3.Connecti
     cursor = conn.cursor()
     
     if role == "professor":
-        # SCHEMA ALIGNMENT: teachers table has [id, name, subject, email, password]
         cursor.execute("SELECT * FROM teachers WHERE email = ?", (email,))
         user = cursor.fetchone()
         if user:
@@ -164,7 +182,14 @@ def get_current_user(token: str = Depends(oauth2_scheme), conn: sqlite3.Connecti
         cursor.execute("SELECT * FROM students WHERE email = ?", (email,))
         user = cursor.fetchone()
         if user:
-            return dict(user) | {"role": "student"}
+            # ─────────────────────────────────────────────────────────────────
+            # FIX 2: Alias DB column 'dept' -> 'department' and 'sex' -> 'gender'
+            # so all endpoints using current_user["department"] work correctly.
+            # ─────────────────────────────────────────────────────────────────
+            student_dict = dict(user) | {"role": "student"}
+            student_dict["department"] = student_dict.get("dept", "")
+            student_dict["gender"] = student_dict.get("sex", "")
+            return student_dict
     
     raise HTTPException(status_code=404, detail="User not found")
 
@@ -180,10 +205,6 @@ def get_all_clubs(
     current_user: Dict = Depends(get_current_user),
     conn: sqlite3.Connection = Depends(get_db_connection)
 ):
-    """
-    Returns club list. 
-    Students see the 'apply_link' inside 'recruitment_status' if they wish to join.
-    """
     return clubs.get_all_clubs_logic(CLUBS_FILE, conn, current_user, category)
 
 @app.post("/api/clubs/recommendations", tags=["Clubs"])
@@ -191,9 +212,6 @@ def get_club_recommendations(
     request: clubs.RecommendRequest,
     current_user: Dict = Depends(get_current_user)
 ):
-    """
-    AI Endpoint: Returns top 3 clubs based on student interests.
-    """
     return clubs.recommend_clubs_ai(CLUBS_FILE, request)
 
 @app.put("/api/clubs/{club_id}/update", tags=["Clubs"])
@@ -202,9 +220,6 @@ def update_club_full_details(
     payload: clubs.ClubUpdateSchema,
     current_user: Dict = Depends(get_current_user)
 ):
-    """
-    Coordinator updates club details, including opening/closing hiring and setting the Google Form link.
-    """
     return clubs.update_club_logic(CLUBS_FILE, club_id, payload, current_user)
 
 @app.get("/api/professor/dashboard", tags=["Professor Dashboard"])
@@ -305,6 +320,61 @@ def get_attendance_history(
     if current_user.get("role") == "professor": return []
     return attendance.fetch_attendance_history(conn, current_user, subject)
 
+@app.post("/api/signup/student", tags=["Auth"])
+def signup_student(
+    payload: StudentSignupSchema,
+    conn: sqlite3.Connection = Depends(get_db_connection)
+):
+    cursor = conn.cursor()
+
+    reg_no = payload.reg_no.strip()
+    name = payload.name.strip()
+    email = payload.email.strip().lower()
+
+    if not reg_no or not name or not email or not payload.password:
+        raise HTTPException(status_code=400, detail="Required fields missing.")
+
+    cursor.execute(
+        "SELECT reg_no FROM students WHERE reg_no = ? OR email = ?",
+        (reg_no, email)
+    )
+
+    existing = cursor.fetchone()
+
+    if existing:
+        raise HTTPException(
+            status_code=400,
+            detail="Student with this registration number or email already exists."
+        )
+
+    hashed_password = pwd_context.hash(payload.password)
+    hostel = (payload.hostel or "Not Assigned").strip() or "Not Assigned"
+
+    cursor.execute("""
+        INSERT INTO students (
+            reg_no, name, email, password, sex, dob, dept, section, year, hostel
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        reg_no,
+        name,
+        email,
+        hashed_password,
+        payload.gender,
+        payload.dob,
+        payload.department,
+        payload.section,
+        payload.year,
+        hostel,
+    ))
+
+    conn.commit()
+
+    return {
+        "status": "success",
+        "message": "Student account created successfully."
+    }
+
 @app.post("/api/login")
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(), 
@@ -326,8 +396,7 @@ def login(
 
     cursor = conn.cursor()
 
-    # 2. CHECK PROFESSORS
-    # SCHEMA ALIGNMENT: teachers table has [id, name, subject, email, password]
+    # --- 2. CHECK PROFESSORS ---
     cursor.execute("SELECT * FROM teachers WHERE email = ?", (identifier,))
     teacher = cursor.fetchone()
     if teacher:
@@ -341,30 +410,51 @@ def login(
                 "name": teacher['name']
             }
 
-    # 3. CHECK STUDENTS (Existing Logic)
-    cursor.execute("SELECT * FROM students WHERE email = ?", (identifier,))
+    # --- 3. CHECK STUDENTS ---
+    cursor.execute(
+        "SELECT * FROM students WHERE email = ? OR reg_no = ?",
+        (identifier, identifier)
+    )
     student = cursor.fetchone()
 
     if student:
-        stored_pw = str(student['password'])
-        reg_no = str(student['reg_no'])
+        stored_pw = str(student["password"])
+        reg_no = str(student["reg_no"])
         password_valid = False
+        is_default_password = stored_pw == reg_no
 
-        if stored_pw == reg_no:
-            if password_input == reg_no:
-                password_valid = True
+        if is_default_password:
+            password_valid = password_input == reg_no
         else:
-            if pwd_context.verify(password_input, stored_pw):
-                password_valid = True
+            try:
+                password_valid = pwd_context.verify(password_input, stored_pw)
+            except Exception:
+                password_valid = stored_pw == password_input
 
         if password_valid:
-            token_data = {"sub": student['email'], "role": "student"}
+            token_data = {
+                "sub": student["email"],
+                "role": "student",
+                "reg_no": student["reg_no"],
+            }
+
             token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
+
             return {
                 "access_token": token,
                 "token_type": "bearer",
                 "role": "student",
-                "student_name": student['name']
+                "student_name": student["name"],
+                "year": student["year"],
+                "section": student["section"],
+                "department": student["dept"],   # alias for frontend
+                "reg_no": student["reg_no"],
+                "hostel": student["hostel"] if "hostel" in student.keys() else "Not Assigned",
+                # ─────────────────────────────────────────────────────────────
+                # FIX 3: Return is_first_login so frontend can prompt
+                # the student to change their default password.
+                # ─────────────────────────────────────────────────────────────
+                "is_first_login": is_default_password,
             }
 
     raise HTTPException(status_code=401, detail="Invalid Credentials")
@@ -501,26 +591,26 @@ def enable_notice(announcement_id: str):
     return {"status": "success", "message": msg}
 
 @app.get("/api/announcements")
-def get_all_announcements(admin_view: bool = False): # 1. Add parameter
+def get_all_announcements(admin_view: bool = False):
     json_path = BASE_DIR / announcements.ANNOUNCEMENTS_FILE
     if not json_path.exists(): return []
     try:
         with open(json_path, "r") as f: data = json.load(f)
     except: return []
 
-    results = []
+    results_list = []
     for aid, item in data.items():
-        # 2. Only skip inactive items if NOT in admin_view
         if not admin_view and not item.get("active", True): 
             continue
             
         item["id"] = aid
         if "file_path" in item and "file_paths" not in item:
              item["file_paths"] = [item["file_path"]]
-        results.append(item)
+        results_list.append(item)
     
-    results.sort(key=lambda x: x.get("upload_date", ""), reverse=True)
-    return results
+    results_list.sort(key=lambda x: x.get("upload_date", ""), reverse=True)
+    return results_list
+
 @app.put("/api/announcements/{announcement_id}/update")
 def update_announcement_endpoint(announcement_id: str, payload: UpdateAnnouncementSchema):
     updates = payload.dict(exclude_unset=True)
@@ -537,8 +627,6 @@ def disable_notice(announcement_id: str):
 
 @app.get("/api/teacher/my-classes")
 def get_teacher_classes_endpoint(current_user: dict = Depends(get_current_user)):
-    """(Professor) Get list of classes (Subject/Section) from Timetable to populate dropdowns."""
-    # FIX: Authenticate as 'professor', matching the role in login()
     if current_user["role"] != "professor":
         raise HTTPException(status_code=403, detail="Unauthorized: Professors only")
     
@@ -553,33 +641,24 @@ async def create_assignment_endpoint(
     title: str = Form(...),
     description: str = Form(...),
     deadline: str = Form(...),
-    file: Optional[UploadFile] = File(None), # Optional File Upload
+    file: Optional[UploadFile] = File(None),
     current_user: dict = Depends(get_current_user)
 ):
-    """(Professor) Post a new assignment with an optional file attachment."""
-    
     if current_user["role"] != "professor":
         raise HTTPException(status_code=403, detail="Unauthorized: Professors only")
 
-    # 1. Handle File Upload
     file_url = None
     if file and file.filename:
         try:
-            # Generate safe unique filename
             file_ext = os.path.splitext(file.filename)[1]
             unique_name = f"{uuid.uuid4()}_{file.filename}"
             file_dest = ASSIGNMENT_DIR / unique_name
-            
-            # Save file
             with open(file_dest, "wb+") as buffer:
                 shutil.copyfileobj(file.file, buffer)
-            
-            # Create accessible URL (matches your StaticFiles mount)
             file_url = f"/data/assignments/{unique_name}"
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
 
-    # 2. Prepare Data Dictionary
     data = {
         'teacher_id': current_user["id"],
         'subject': subject,
@@ -591,16 +670,15 @@ async def create_assignment_endpoint(
         'file_path': file_url 
     }
     
-    # 3. Save to DB
     success, msg = assignment.create_assignment(data)
     
     if not success:
         raise HTTPException(status_code=500, detail=msg)
     
     return {"status": "success", "message": "Assignment created successfully"}
+
 @app.get("/api/student/assignments")
 def get_my_assignments(current_user: dict = Depends(get_current_user)):
-    """(Student) View assignments for my Section/Year."""
     if current_user["role"] != "student":
         raise HTTPException(status_code=403, detail="Unauthorized")
         
@@ -608,11 +686,6 @@ def get_my_assignments(current_user: dict = Depends(get_current_user)):
 
 @app.post("/api/student/ai-assistant")
 def get_assignment_help(payload: StudentAIRequest, current_user: dict = Depends(get_current_user)):
-    """
-    (Student AI) 
-    Mode 'plan': Returns a checklist to start the assignment.
-    Mode 'explain': Explains the specific concept the student asked about.
-    """
     if current_user["role"] != "student":
         raise HTTPException(status_code=403, detail="Unauthorized")
         
@@ -632,7 +705,6 @@ def get_class_details_endpoint(
     if current_user.get("role") != "student":
         raise HTTPException(status_code=403, detail="Student access only")
 
-    # --- PART A: Get Attendance Stats ---
     all_stats = attendance.calculate_attendance_stats(conn, current_user)
     
     subject_stat = None
@@ -642,12 +714,9 @@ def get_class_details_endpoint(
             subject_stat = item_dict
             break
 
-    # --- PART B: Fetch Teacher Name (New Logic) ---
-    # We query the timetable/teachers table to find who teaches this subject for this section
     teacher_name = "N/A"
     try:
         cursor = conn.cursor()
-        # Assuming 'students' table has year/section and 'timetable' maps them
         cursor.execute("""
             SELECT t.name 
             FROM teachers t
@@ -660,18 +729,21 @@ def get_class_details_endpoint(
         if row:
             teacher_name = row[0]
         else:
-            # Fallback: check if timetable has a raw 'teacher_name' column (legacy support)
+            # ─────────────────────────────────────────────────────────────────
+            # FIX 4: Pass subject as a tuple, not a bare string.
+            # sqlite3 iterates a string char-by-char if not wrapped in a tuple,
+            # causing "binding" errors or wrong results.
+            # ─────────────────────────────────────────────────────────────────
             cursor.execute("""
                 SELECT name FROM teachers 
                 WHERE subject = ?
                 LIMIT 1
-            """, (subject))
+            """, (subject,))
             row_legacy = cursor.fetchone()
             if row_legacy and row_legacy[0]:
                 teacher_name = row_legacy[0]
     except Exception as e:
         print(f"Error fetching teacher: {e}")
-        # Keep default "N/A" if query fails
 
     if not subject_stat:
         return {
@@ -684,7 +756,6 @@ def get_class_details_endpoint(
             "teacher": teacher_name
         }
 
-    # --- PART C: Calculate Advice ---
     pct = subject_stat.get('percentage', 0)
     attended = subject_stat.get('attended', subject_stat.get('present', 0))
     total = subject_stat.get('total', subject_stat.get('total_classes', 0))
@@ -717,9 +788,9 @@ def get_class_details_endpoint(
         "total": total,
         "status": status,
         "advice": advice,
-        "teacher": teacher_name # <--- Return it here
+        "teacher": teacher_name
     }
-    
+
 @app.get("/api/teacher/results/students", tags=["Results"])
 def get_students_for_grading(
     section: str,
@@ -727,30 +798,24 @@ def get_students_for_grading(
     current_user: Dict = Depends(get_current_user),
     conn: sqlite3.Connection = Depends(get_db_connection)
 ):
-    """
-    (Professor) Step 2: After selecting a class, fetch the list of students 
-    in that specific section and year to input marks.
-    """
     if current_user["role"] != "professor":
         raise HTTPException(status_code=403, detail="Unauthorized: Professors only")
     
-    # Uses the helper from results.py
     student_list = results.get_students_for_teacher(conn, section, year)
     
     if not student_list:
         raise HTTPException(status_code=404, detail="No students found for this class configuration")
         
     return student_list
+
 @app.get("/api/student/results", tags=["Results"])
 def view_my_results(
     current_user: Dict = Depends(get_current_user),
     conn: sqlite3.Connection = Depends(get_db_connection)
 ):
-    """(Student) View my marks, SGPA, CGPA, and Rank."""
     if current_user["role"] != "student":
         raise HTTPException(status_code=403, detail="Unauthorized")
         
-    # We pass 'email' here because the database table 'results' uses student_email.
     data = results.get_student_results(conn, current_user['email'])
     return data
 
@@ -759,14 +824,9 @@ def get_classes_for_results(
     current_user: Dict = Depends(get_current_user),
     conn: sqlite3.Connection = Depends(get_db_connection)
 ):
-    """
-    (Professor) Step 1: Get the list of all classes (Subject, Section, Year) 
-    assigned to the teacher to populate the selection dropdown.
-    """
     if current_user["role"] != "professor":
         raise HTTPException(status_code=403, detail="Unauthorized: Professors only")
     
-    # Uses the helper from results.py
     classes = results.get_teacher_classes(conn, current_user["id"])
     return classes
 
@@ -776,11 +836,6 @@ def submit_student_results(
     current_user: Dict = Depends(get_current_user),
     conn: sqlite3.Connection = Depends(get_db_connection)
 ):
-    """
-    (Professor) Submit marks for the whole batch.
-    Input: Uses Reg No.
-    Storage: Automatically converts Reg No -> Email for DB storage.
-    """
     if current_user["role"] != "professor":
         raise HTTPException(status_code=403, detail="Unauthorized: Professors only")
 
@@ -804,13 +859,12 @@ def create_feed_post(
     current_user: Dict = Depends(get_current_user),
     conn: sqlite3.Connection = Depends(get_db_connection)
 ):
-    # Returns 200 OK even if rejected, frontend handles the "status": "rejected" message
     return feed.create_post_logic(
-    conn,
-    current_user['email'],
-    current_user['role'],
-    payload.dict()
-)
+        conn,
+        current_user['email'],
+        current_user['role'],
+        payload.dict()
+    )
 
 @app.post("/api/feed/vote", tags=["Feed"])
 def vote_feed_post(
@@ -826,7 +880,6 @@ def vote_feed_post(
 
 @app.get("/api/professor/assignments")
 def get_created_assignments(current_user: dict = Depends(get_current_user)):
-    """(Professor) View assignments I have created."""
     if current_user["role"] != "professor":
         raise HTTPException(status_code=403, detail="Unauthorized")
         
@@ -843,7 +896,6 @@ def get_all_students_admin(
 
     cursor = conn.cursor()
     
-    # 1. Select ONLY the columns that actually exist in your screenshot
     query = """
         SELECT reg_no, name, email, sex, dob, dept, section, year 
         FROM students
@@ -861,20 +913,14 @@ def get_all_students_admin(
     for row in rows:
         r = dict(row)
         students.append({
-            # DIRECT MAPPING
             "id": r["reg_no"],
             "name": r["name"],
             "email": r["email"],
             "section": r["section"],
             "year": r["year"],
             "dob": r["dob"],
-            
-            # ALIAS MAPPING (DB Column -> Frontend Name)
-            "gender": r["sex"],       # DB has 'sex', Frontend expects 'gender'
-            "department": r["dept"],  # DB has 'dept', Frontend expects 'department'
-            
-            # STUBBED DATA (Columns missing in your DB)
-            # We return placeholders so the UI doesn't crash
+            "gender": r["sex"],
+            "department": r["dept"],
             "hostel": "Not Assigned",
             "phone": "N/A",
             "address": "N/A",
@@ -894,22 +940,19 @@ def update_student_details(
     if current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Access denied. Admins only.")
 
-    # 1. Map Frontend fields to your ACTUAL Database Columns
-    # Keys = Frontend Payload, Values = DB Column Name
     field_map = {
         "name": "name",
         "email": "email",
         "year": "year",
         "section": "section",
         "dob": "dob",
-        "gender": "sex",      # Frontend sends 'gender', we save to 'sex'
-        "department": "dept"  # Frontend sends 'department', we save to 'dept'
+        "gender": "sex",
+        "department": "dept"
     }
 
     updates = {}
     incoming_data = payload.dict()
 
-    # 2. Filter: Only prepare updates for columns that exist
     for frontend_key, db_column in field_map.items():
         if incoming_data.get(frontend_key) is not None:
             updates[db_column] = incoming_data[frontend_key]
@@ -917,7 +960,6 @@ def update_student_details(
     if not updates:
         return {"status": "success", "message": "No valid database fields changed (Phone/Address are visual only)."}
 
-    # 3. Build SQL Query
     set_clause = ", ".join([f"{col} = ?" for col in updates.keys()])
     values = list(updates.values())
     values.append(student_id)
@@ -936,7 +978,6 @@ def admin_reset_password(
     current_user: Dict = Depends(get_current_user),
     conn: sqlite3.Connection = Depends(get_db_connection)
 ):
-    """Resets password to Reg No."""
     if current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Access denied. Admins only.")
 
@@ -958,32 +999,25 @@ def get_admin_dashboard_stats(
 
     cursor = conn.cursor()
 
-    # 1. Count Students
     try:
         cursor.execute("SELECT COUNT(*) FROM students")
         student_count = cursor.fetchone()[0]
     except:
         student_count = 0
 
-    # 2. Count Professors
     try:
         cursor.execute("SELECT COUNT(*) FROM teachers")
         prof_count = cursor.fetchone()[0]
     except:
         prof_count = 0
 
-    # 3. Count Feed Posts (THE FIX)
-    # Instead of guessing the SQL table name, we use the helper function 
-    # that we know works for the feed tab.
     try:
-        # We pass the admin's email to get the viewable feed
         feed_data = feed.get_feed_logic(conn, current_user['email'])
         feed_count = len(feed_data)
     except Exception as e:
         print(f"Error counting feed: {e}")
         feed_count = 0
 
-    # 4. Count Announcements
     announcement_count = 0
     json_path = BASE_DIR / announcements.ANNOUNCEMENTS_FILE
     if json_path.exists():
@@ -1011,8 +1045,6 @@ def get_all_professors_admin(
         raise HTTPException(status_code=403, detail="Access denied. Admins only.")
 
     cursor = conn.cursor()
-    
-    # SCHEMA ALIGNMENT: teachers table has [id, name, subject, email, password]
     query = "SELECT id, name, email, subject FROM teachers"
     params = []
 
@@ -1026,15 +1058,12 @@ def get_all_professors_admin(
     professors = []
     for row in rows:
         r = dict(row)
-        # We map DB columns to Frontend fields.
         professors.append({
             "id": r["id"],
             "name": r["name"],
             "email": r["email"],
-            "department": r["subject"],     # SCHEMA MAPPING: 'subject' -> 'department'
-            "specialization": r["subject"], # SCHEMA MAPPING: 'subject' -> 'specialization'
-            
-            # --- SCHEMA ALIGNMENT: Data removed as requested (N/A) ---
+            "department": r["subject"],
+            "specialization": r["subject"],
             "designation": "Professor", 
             "joiningDate": "N/A",
             "phone": "N/A",
@@ -1055,19 +1084,17 @@ def update_professor_details(
     if current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Access denied. Admins only.")
 
-    # 1. Prepare updates based strictly on the 'teachers' table columns: [name, email, subject]
     updates = {}
     if payload.name: 
         updates["name"] = payload.name
     if payload.email: 
         updates["email"] = payload.email
     if payload.department: 
-        updates["subject"] = payload.department  # Mapping Frontend 'department' -> DB 'subject'
+        updates["subject"] = payload.department  # Frontend 'department' -> DB 'subject'
 
     if not updates:
         return {"status": "success", "message": "No changes detected."}
 
-    # 2. Build SQL Query dynamically
     set_clause = ", ".join([f"{col} = ?" for col in updates.keys()])
     values = list(updates.values())
     values.append(prof_id)
@@ -1086,13 +1113,11 @@ def admin_reset_professor_password(
     current_user: Dict = Depends(get_current_user),
     conn: sqlite3.Connection = Depends(get_db_connection)
 ):
-    """Resets professor password to their ID."""
     if current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Access denied. Admins only.")
 
     try:
         cursor = conn.cursor()
-        # SCHEMA ALIGNMENT: 'id' and 'password' columns exist
         cursor.execute("UPDATE teachers SET password = id WHERE id = ?", (prof_id,))
         conn.commit()
         return {"status": "success", "message": f"Password reset to {prof_id}"}
@@ -1106,15 +1131,10 @@ def get_admin_timetable(
     current_user: Dict = Depends(get_current_user),
     conn: sqlite3.Connection = Depends(get_db_connection)
 ):
-    """
-    Fetches timetable slots for a specific Section and Year.
-    Joins with 'teachers' table to get the professor's name.
-    """
     if current_user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Access denied. Admins only.")
 
     cursor = conn.cursor()
-    # We join with teachers table to get the name for the UI, but keep teacher_id for logic
     query = """
         SELECT t.id, t.section, t.year, t.day_of_week, t.start_time, t.end_time, 
                t.subject, t.teacher_id, t.room_number,
@@ -1210,12 +1230,8 @@ def delete_feed_post(
 
 @app.get("/api/me", tags=["Auth"])
 def get_current_user_profile(current_user: Dict = Depends(get_current_user)):
-    """
-    Returns the basic profile of the currently logged-in user.
-    Useful for populating UI headers/sidebars.
-    """
     return {
-        "id": current_user.get("id", current_user.get("reg_no")), # Handle student vs prof ID differences
+        "id": current_user.get("id", current_user.get("reg_no")),
         "name": current_user["name"],
         "email": current_user["email"],
         "role": current_user["role"]
@@ -1230,7 +1246,6 @@ def get_report_classes(
         raise HTTPException(status_code=403, detail="Unauthorized")
     return attendance.get_professor_distinct_classes(conn, current_user["id"])
 
-# 2. Endpoint to get the Table Data
 @app.get("/api/professor/reports/summary", tags=["Professor Dashboard"])
 def get_report_summary(
     subject: str, section: str, year: int,
@@ -1241,7 +1256,6 @@ def get_report_summary(
         raise HTTPException(status_code=403, detail="Unauthorized")
     return attendance.get_class_attendance_summary(conn, current_user["id"], subject, section, year)
 
-# 3. Endpoint for CSV Export
 @app.get("/api/professor/reports/export", tags=["Professor Dashboard"])
 def export_attendance_csv(
     subject: str, section: str, year: int,
@@ -1255,7 +1269,6 @@ def export_attendance_csv(
     class_info = f"{subject}_{year}_{section}"
     return attendance.generate_csv_report(data, class_info)
 
-# 4. Endpoint for Student History Modal
 @app.get("/api/professor/reports/student-history", tags=["Professor Dashboard"])
 def get_student_history_report(
     subject: str, section: str, year: int, reg_no: str,
@@ -1266,3 +1279,23 @@ def get_student_history_report(
         raise HTTPException(status_code=403, detail="Unauthorized")
     
     return attendance.get_student_history_for_class(conn, current_user["id"], subject, section, year, reg_no)
+
+@app.get("/api/debug/db")
+def debug_db(conn: sqlite3.Connection = Depends(get_db_connection)):
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM students")
+    students = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM teachers")
+    teachers = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM timetable")
+    timetable = cursor.fetchone()[0]
+
+    return {
+        "db_path": str(DB_PATH),
+        "students": students,
+        "teachers": teachers,
+        "timetable": timetable
+    }

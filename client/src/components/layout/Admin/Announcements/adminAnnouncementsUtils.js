@@ -10,9 +10,11 @@ export const ANNOUNCEMENT_CATEGORIES = [
   "Clubs & Societies",
 ];
 
+// FIX: Guard against null token — localStorage returns null when key is absent,
+// which would produce "Bearer null" and cause 401s on every request.
 export const getAuthHeaders = () => {
   const token = localStorage.getItem("access_token");
-
+  if (!token) return {};
   return {
     Authorization: `Bearer ${token}`,
   };

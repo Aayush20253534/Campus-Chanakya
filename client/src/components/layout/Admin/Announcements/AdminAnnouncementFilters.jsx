@@ -1,9 +1,10 @@
-import { ANNOUNCEMENT_CATEGORIES } from "./adminAnnouncementsUtils";
-
-const AdminAnnouncementFilters = ({ activeCategory, onChangeCategory }) => {
+// FIX: Use the `categories` prop passed from AdminAnnouncements instead of
+// re-importing ANNOUNCEMENT_CATEGORIES directly. This way the parent controls
+// the list and there's a single source of truth.
+const AdminAnnouncementFilters = ({ categories = [], activeCategory, onChangeCategory }) => {
   return (
     <div className="admin-announcement-filters">
-      {ANNOUNCEMENT_CATEGORIES.map((category) => (
+      {categories.map((category) => (
         <button
           key={category}
           type="button"

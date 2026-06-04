@@ -29,3 +29,4 @@ Pillow                  # (PIL) Image manipulation
 # Windows: Download poppler binary and add bin/ to PATH
 # Linux: sudo apt-get install poppler-utils
 # Mac: brew install poppler
+psycopg[binary]
