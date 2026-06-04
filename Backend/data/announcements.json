@@ -1,0 +1,82 @@
+{
+    "3f1c62d8-2c67-4093-a3e2-afc3ad8362ea": {
+        "id": "3f1c62d8-2c67-4093-a3e2-afc3ad8362ea",
+        "admin_given_title": "Notice for Hard Copy",
+        "admin_notes": "Notice for the students who have applied for government scholarships to submit hard copy of documents in the office",
+        "ai_generated_title": "End Odd Semester Examination Seating Plan",
+        "ai_generated_category": "Examination",
+        "ai_generated_short_summary": "Detailed room allocations and seating plans for B.Tech and MBA students for the End [Odd] Semester Examinations scheduled from November 24 to December 5, 2025.",
+        "ai_generated_descriptive_summary": "This comprehensive notice details the seating arrangement for the End [Odd] Semester Examinations for the 2025-26 session. It covers multiple departments including B.Tech (Biotechnology, PIE, MED, CED, Chemical, EED, ECED, CSED) and MBA. The document specifies room assignments (e.g., GS-3 to GS-8, NLHC, SEW, and LHC) mapped to student roll numbers and registration numbers. Examinations are scheduled to take place between 2:30 PM and 5:00 PM, starting from November 24, 2025, and concluding on December 5, 2025. Students are also reminded (via admin notes) to submit hard copies of scholarship documents to the office.",
+        "ai_generated_tags": [
+            "Seating Arrangement",
+            "End Semester Exam"
+        ],
+        "ai_generated_relevance_score": 95,
+        "extracted_deadline": "2025-11-24",
+        "active": true,
+        "upload_date": "2026-01-13",
+        "file_paths": [
+            "/data/uploads/notice_3f1c62d8-2c67-4093-a3e2-afc3ad8362ea_133c2057.pdf"
+        ]
+    },
+    "a1968f3a-929e-4c3f-b49b-e0206550b72c": {
+        "id": "a1968f3a-929e-4c3f-b49b-e0206550b72c",
+        "admin_given_title": "Notice for hard copy",
+        "admin_notes": "",
+        "ai_generated_title": "Submit Scholarship Hard Copies Immediately",
+        "ai_generated_category": "Administrative",
+        "ai_generated_short_summary": "Students must immediately submit hard copies of their State or NSP scholarship applications to the office for processing.",
+        "ai_generated_descriptive_summary": "The Office of the Dean (Student Welfare) at MNNIT Allahabad has issued an urgent notice for all students who have applied for state or central government (NSP) scholarships. Students who have not yet submitted the hard copy of their application along with all mandatory documents are required to do so immediately. Failure to submit these documents will prevent the office from forwarding the applications to the respective ministries or departments, for which the students will be held personally responsible.",
+        "ai_generated_tags": [
+            "Scholarship",
+            "NSP"
+        ],
+        "ai_generated_relevance_score": 65,
+        "extracted_deadline": null,
+        "active": true,
+        "upload_date": "2026-01-15",
+        "file_paths": [
+            "/data/uploads/notice_a1968f3a-929e-4c3f-b49b-e0206550b72c_2f75ba2a.pdf"
+        ]
+    },
+    "0d69ef3f-1753-43de-af47-36ff253ea7ba": {
+        "id": "0d69ef3f-1753-43de-af47-36ff253ea7ba",
+        "admin_given_title": "Notice for punished students",
+        "admin_notes": "",
+        "ai_generated_title": "MNNIT Allahabad Student Disciplinary Action Notice",
+        "ai_generated_category": "Administrative",
+        "ai_generated_short_summary": "MNNIT Allahabad has issued disciplinary penalties, including hostel expulsions and institute terminations, against several students for various misconducts.",
+        "ai_generated_descriptive_summary": "The Office of the Chief Proctor at MNNIT Allahabad released an official order detailing punishments for students involved in indiscipline. Sanctions range from 'Black Dots,' hostel expulsion, and mess debarment to permanent termination from the institute for offenses such as illegal substance use and misconduct toward faculty. The notice also mandates corrective measures like counseling, social work, and formal warnings, with actions to be recorded in character certificates and communicated to parents.",
+        "ai_generated_tags": [
+            "Discipline",
+            "Expulsion"
+        ],
+        "ai_generated_relevance_score": 30,
+        "extracted_deadline": null,
+        "active": true,
+        "upload_date": "2026-01-14",
+        "file_paths": [
+            "/data/uploads/notice_0d69ef3f-1753-43de-af47-36ff253ea7ba_e8445a8a.pdf"
+        ]
+    },
+    "34448ecf-bf6d-446a-bbad-4bedc96fc7dd": {
+        "id": "34448ecf-bf6d-446a-bbad-4bedc96fc7dd",
+        "admin_given_title": "B.TECH II SEMESTER CES ALLOTMENT RESULT",
+        "admin_notes": "",
+        "ai_generated_title": "B.Tech II Semester CES Allotment Results",
+        "ai_generated_category": "Academic",
+        "ai_generated_short_summary": "The document lists the assigned elective subjects for over 1,100 B.Tech second-semester students across various engineering branches.",
+        "ai_generated_descriptive_summary": "This official notice provides the comprehensive results of the Core Elective Subject (CES) allotment for B.Tech II Semester students. The list includes 1,101 entries, detailing each student's registration number, name, parent branch, and the specific subject they have been allocated, such as Engineering Thermodynamics, Data Structures, and Sustainable Urban Habitat. The allotment covers multiple departments including Computer Science, Electronics, Mechanical, and Civil Engineering.",
+        "ai_generated_tags": [
+            "B.Tech",
+            "Subject Allotment"
+        ],
+        "ai_generated_relevance_score": 100,
+        "extracted_deadline": null,
+        "active": true,
+        "upload_date": "2026-01-16",
+        "file_paths": [
+            "/data/uploads/notice_34448ecf-bf6d-446a-bbad-4bedc96fc7dd_bfef4362.pdf"
+        ]
+    }
+}

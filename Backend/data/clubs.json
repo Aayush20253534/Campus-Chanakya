@@ -1,0 +1,438 @@
+[
+  {
+    "id": "CM-GRB-01",
+    "name": "Garba Committee",
+    "category": "Cultural",
+    "logo_url": "/data/assets/garba_logo.png",
+    "banner_image": "/data/assets/garba_banner.png",
+    "short_description": "Preserving tradition through Navratri and folk dance.",
+    "full_description": "Responsible for organizing the massive Navratri nights and the folk segments of Culrav. We manage traditional choreography and campus-wide Dandiya events.",
+    "achievements": [
+      "Organized 'Nav-Utsav' for over 3000 students",
+      "Best Managed Event Award at Culrav 2023"
+    ],
+    "coordinators": [
+      "20223001",
+      "20223002"
+    ],
+    "members": [
+      "20243001",
+      "20243002",
+      "20253010",
+      "20253011",
+      "20243022",
+      "20233015",
+      "20253044",
+      "20243056",
+      "20233089",
+      "20253018",
+      "20243033",
+      "20233041"
+    ],
+    "recruitment_status": {
+      "is_hiring": false,
+      "roles_open": [],
+      "apply_link": ""
+    },
+    "tags": [
+      "Traditional",
+      "Dance",
+      "Event Management"
+    ]
+  },
+  {
+    "id": "CL-BSK-10",
+    "name": "Basketball Club",
+    "category": "Sports",
+    "logo_url": "/data/assets/Basketball_logo.png",
+    "banner_image": "/data/assets/basketball_banner.png",
+    "short_description": "The official court-side team of MNNIT.",
+    "full_description": "A team built on strategy and endurance. We manage the institute basketball courts and represent MNNIT in various regional and national sports fests like Srijan.",
+    "achievements": [
+      "Winners of Prayagraj Invitational Trophy 2024",
+      "Top 4 in North Zone Inter-NIT Tournament"
+    ],
+    "coordinators": [
+      "20223003",
+      "20233001"
+    ],
+    "members": [
+      "20243003",
+      "20253001",
+      "20253021",
+      "20243045",
+      "20233012",
+      "20253067",
+      "20243011",
+      "20233090",
+      "20253015",
+      "20243078",
+      "20253033",
+      "20233022"
+    ],
+    "recruitment_status": {
+      "is_hiring": false,
+      "roles_open": [],
+      "apply_link": ""
+    },
+    "tags": [
+      "Basketball",
+      "Team Sports",
+      "Spirit"
+    ]
+  },
+  {
+    "id": "CM-WST-03",
+    "name": "Western Committee",
+    "category": "Dance",
+    "logo_url": "/data/assets/western_logo.png",
+    "banner_image": "/data/assets/western_banner.png",
+    "short_description": "Modern dance and western music performance group.",
+    "full_description": "A powerhouse of energy focusing on Hip-Hop, Urban, and Western contemporary styles. We represent MNNIT in national level dance-offs and group battles across India.",
+    "achievements": [
+      "Won 1st Prize in 'Burn The Floor' at Culrav",
+      "Finalists at Antaragni (IIT Kanpur)"
+    ],
+    "coordinators": [
+      "20223004",
+      "20233002"
+    ],
+    "members": [
+      "20243004",
+      "20253002",
+      "20253055",
+      "20243019",
+      "20233033",
+      "20253028",
+      "20243061",
+      "20233014",
+      "20253092",
+      "20243044",
+      "20253013",
+      "20233056"
+    ],
+    "recruitment_status": {
+      "is_hiring": true,
+      "roles_open": [
+        "Hip-Hop Dancers",
+        "Contemporary Artists"
+      ],
+      "apply_link": "https://forms.gle/western-dance-mnnit"
+    },
+    "tags": [
+      "Dance",
+      "Western",
+      "Choreography"
+    ]
+  },
+  {
+    "id": "CM-MHM-04",
+    "name": "Media House MNNIT (MHM)",
+    "category": "Media",
+    "logo_url": "/data/assets/mhm_logo.png",
+    "banner_image": "/data/assets/mhm_banner.png",
+    "short_description": "The digital storytelling and broadcasting wing.",
+    "full_description": "We are the official eyes and ears of MNNIT. We handle cinematic coverage, social media broadcasting, and video documentaries for all major institute fests.",
+    "achievements": [
+      "Produced the Official Culrav Aftermovie 2024",
+      "Official Coverage Partner for Inter-NIT Sports Meet"
+    ],
+    "coordinators": [
+      "20223005",
+      "20223006"
+    ],
+    "members": [
+      "20243005",
+      "20253003",
+      "20253041",
+      "20243088",
+      "20233027",
+      "20253019",
+      "20243030",
+      "20233065",
+      "20253072",
+      "20243051",
+      "20253014",
+      "20233099"
+    ],
+    "recruitment_status": {
+      "is_hiring": true,
+      "roles_open": [
+        "Video Editor",
+        "Photographer",
+        "VFX Artist"
+      ],
+      "apply_link": "https://forms.gle/mhm-apply"
+    },
+    "tags": [
+      "Cinematography",
+      "Media",
+      "Editing"
+    ]
+  },
+  {
+    "id": "CM-NSD-05",
+    "name": "Nishaad",
+    "category": "Music",
+    "logo_url": "/data/assets/nishaad_logo.png",
+    "banner_image": "/data/assets/nishaad_banner.png",
+    "short_description": "The classical music and acoustic ensemble.",
+    "full_description": "Nishaad focuses on pure Hindustani classical music and acoustic fusion. We organize 'Anunaad', the annual unplugged music night, fostering soulful musical talent.",
+    "achievements": [
+      "Best Instrumental Performance at Avishkar'23",
+      "Hosted 5 successful Acoustic Fusion Nights"
+    ],
+    "coordinators": [
+      "20233003",
+      "20223007"
+    ],
+    "members": [
+      "20243006",
+      "20253004",
+      "20253036",
+      "20243015",
+      "20233048",
+      "20253062",
+      "20243071",
+      "20233010",
+      "20253025",
+      "20243093",
+      "20253058",
+      "20233039"
+    ],
+    "recruitment_status": {
+      "is_hiring": true,
+      "roles_open": [
+        "Classical Vocalists",
+        "Instrumentalists"
+      ],
+      "apply_link": "https://forms.gle/nishaad-mnnit"
+    },
+    "tags": [
+      "Music",
+      "Classical",
+      "Acoustic"
+    ]
+  },
+  {
+    "id": "CL-ROB-06",
+    "name": "Robotics Club",
+    "category": "Technical",
+    "logo_url": "/data/assets/Robotics_logo.png",
+    "banner_image": "/data/assets/Robotics_banner.png",
+    "short_description": "The multidisciplinary hub for automation and robotics.",
+    "full_description": "A community of enthusiasts building autonomous bots, drones, and mechanical systems. We represent MNNIT in national competitions like e-Yantra and Techfest.",
+    "achievements": [
+      "Silver Medal at e-Yantra (IIT Bombay) 2024",
+      "1st Place in Robo-Race at Avishkar"
+    ],
+    "coordinators": [
+      "20223001",
+      "20233004"
+    ],
+    "members": [
+      "20243007",
+      "20253005",
+      "20253081",
+      "20243026",
+      "20233055",
+      "20253017",
+      "20243049",
+      "20233076",
+      "20253094",
+      "20243063",
+      "20253030",
+      "20233019"
+    ],
+    "recruitment_status": {
+      "is_hiring": true,
+      "roles_open": [
+        "Embedded Systems",
+        "CAD Designer",
+        "AI Intern"
+      ],
+      "apply_link": "https://forms.gle/robotics-hiring"
+    },
+    "tags": [
+      "Robotics",
+      "Hardware",
+      "Automation"
+    ]
+  },
+  {
+    "id": "CL-CCC-07",
+    "name": "Computer Club (CC)",
+    "category": "Technical",
+    "logo_url": "/data/assets/CC_club_logo.png",
+    "banner_image": "/data/assets/CC_club_banner.png",
+    "short_description": "Promoting a culture of competitive programming and development.",
+    "full_description": "The oldest technical club of MNNIT, fostering algorithmic thinking and software engineering. We organize Hack36, North India's largest annual student-led hackathon.",
+    "achievements": [
+      "Successfully conducted Hack36 v7.0 with 1500+ participants",
+      "Multiple members qualified for ACM-ICPC Regionals"
+    ],
+    "coordinators": [
+      "20223002",
+      "20233005"
+    ],
+    "members": [
+      "20243001",
+      "20253006",
+      "20253048",
+      "20243013",
+      "20233088",
+      "20253029",
+      "20243066",
+      "20233042",
+      "20253077",
+      "20243052",
+      "20253016",
+      "20233095"
+    ],
+    "recruitment_status": {
+      "is_hiring": false,
+      "roles_open": [],
+      "apply_link": ""
+    },
+    "tags": [
+      "Coding",
+      "Development",
+      "Hackathon"
+    ]
+  },
+  {
+    "id": "CL-TEC-05",
+    "name": "Aero Club",
+    "category": "Technical",
+    "logo_url": "/data/assets/Aeromodelling_logo.png",
+    "banner_image": "/data/assets/Aeromodelling_banner.png",
+    "short_description": "Pushing the boundaries of flight through drones and RC aircraft.",
+    "full_description": "The Aero Club is MNNIT's premier aeromodelling hub. We specialize in designing, building, and flying RC planes, multi-rotors, and fixed-wing drones. From CAD modeling to autonomous flight, we foster a culture of aerospace engineering and hands-on fabrication.",
+    "achievements": [
+      "Secured Top 5 in the National Drone Racing Championship 2025",
+      "Successfully developed a custom long-range VTOL (Vertical Take-Off and Landing) prototype"
+    ],
+    "coordinators": [
+      "20223003",
+      "20233006"
+    ],
+    "members": [
+      "20243002",
+      "20253051",
+      "20243035",
+      "20233060",
+      "20253083",
+      "20243024",
+      "20233017",
+      "20253046",
+      "20243079",
+      "20253022",
+      "20233031"
+    ],
+    "recruitment_status": {
+      "is_hiring": true,
+      "roles_open": [
+        "Hardware Design Lead",
+        "Drone Pilot",
+        "Embedded Systems Developer"
+      ],
+      "apply_link": "https://forms.gle/mnnit-aero-recruit"
+    },
+    "tags": [
+      "Aeromodelling",
+      "Drones",
+      "Robotics",
+      "Aviation"
+    ]
+  },
+  {
+    "id": "CL-ATH-09",
+    "name": "Athletic Club",
+    "category": "Sports",
+    "logo_url": "/data/assets/Athletics_logo.png",
+    "banner_image": "/data/assets/athletic_banner.png",
+    "short_description": "Track, field, and fitness excellence.",
+    "full_description": "We manage official sports meets and train students for Inter-NIT Athletics. Our focus is on fostering endurance, speed, and discipline through track and field events.",
+    "achievements": [
+      "Won 5 Gold Medals at Inter-NIT Sports Meet 2023",
+      "Organized the Institute Marathon 2024"
+    ],
+    "coordinators": [
+      "20223004",
+      "20233007"
+    ],
+    "members": [
+      "20243003",
+      "20253007",
+      "20253099",
+      "20243047",
+      "20233023",
+      "20253054",
+      "20243018",
+      "20233075",
+      "20253037",
+      "20243069",
+      "20253012",
+      "20233082"
+    ],
+    "recruitment_status": {
+      "is_hiring": true,
+      "roles_open": [
+        "Sprinters",
+        "Long Jumpers",
+        "Event Managers"
+      ],
+      "apply_link": "https://forms.gle/mnnit-athletics"
+    },
+    "tags": [
+      "Sports",
+      "Fitness",
+      "Athletics"
+    ]
+  },
+  {
+    "id": "CM-FTP-02",
+    "name": "Footprints",
+    "category": "Fashion/Modeling",
+    "logo_url": "/data/assets/fp_logo.png",
+    "banner_image": "/data/assets/fp_banner.png",
+    "short_description": "The elite fashion and modeling wing of MNNIT.",
+    "full_description": "Footprints defines style and personality at MNNIT. We focus on ramp-walk, choreography, and costume design. We are the official curators of 'Paridhan', the flagship fashion event of Culrav.",
+    "achievements": [
+      "Winners of Paridhan 2024",
+      "Runners-up at IIT Kanpur's Ritambhara"
+    ],
+    "coordinators": [
+      "20223005",
+      "20233001"
+    ],
+    "members": [
+      "20243004",
+      "20253001",
+      "20253066",
+      "20243038",
+      "20233059",
+      "20253024",
+      "20243085",
+      "20233013",
+      "20253049",
+      "20243091",
+      "20253075",
+      "20233046"
+    ],
+    "recruitment_status": {
+      "is_hiring": true,
+      "roles_open": [
+        "Male Models",
+        "Female Models",
+        "Choreographers"
+      ],
+      "apply_link": "https://forms.gle/mnnit-ftp-2024"
+    },
+    "tags": [
+      "Fashion",
+      "Modeling",
+      "Personality"
+    ]
+  }
+]

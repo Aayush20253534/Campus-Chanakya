@@ -1,0 +1,31 @@
+# Core Framework & Server
+fastapi
+uvicorn                 # Required to run the FastAPI app
+python-multipart        # Required for File uploads and Form data
+
+# Data Validation & Settings
+pydantic
+python-dotenv
+
+# Database (SQLite is built-in, but this helps with async if needed later)
+# No external pip package needed for standard sqlite3
+
+# Google AI (Gemini)
+google-genai            # You are using the new genai.Client SDK
+
+# Authentication & Security
+passlib[argon2]         # For password hashing (argon2 scheme used in main.py)
+argon2-cffi             # CFFI bindings for Argon2
+python-jose[cryptography] # For JWT token generation and decoding
+
+# PDF & Image Processing (Announcements)
+numpy                   # Required by EasyOCR and Image processing
+easyocr                 # For extracting text from images
+pypdf                   # For reading PDF text
+pdf2image               # For converting PDF pages to images for OCR
+Pillow                  # (PIL) Image manipulation
+
+# Note: for pdf2image to work, you must have 'poppler' installed on your OS.
+# Windows: Download poppler binary and add bin/ to PATH
+# Linux: sudo apt-get install poppler-utils
+# Mac: brew install poppler

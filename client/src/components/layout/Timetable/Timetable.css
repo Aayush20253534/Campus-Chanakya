@@ -1,0 +1,605 @@
+.timetable-page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1px 16px 20px 16px;
+}
+
+.timetable-page-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.timetable-title-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.timetable-scroll-icon {
+  width: 36px;
+  height: 36px;
+  color: var(--gold);
+}
+
+.timetable-page-title {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.06em;
+  font-family: "Cinzel", serif;
+}
+
+.timetable-loading {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  color: var(--muted-foreground);
+  font-family: "Cinzel", serif;
+}
+
+.timetable-container {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  width: 100%;
+  overflow: hidden;
+}
+
+.timetable-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  table-layout: fixed;
+}
+
+.timetable-table th:first-child {
+  width: 10%;
+}
+
+.timetable-table th,
+.timetable-table td {
+  border: 1px solid var(--border);
+  padding: 10px 6px;
+  text-align: center;
+  vertical-align: middle;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.timetable-table th {
+  background: linear-gradient(135deg, var(--primary), hsl(0, 55%, 22%));
+  color: var(--primary-foreground);
+  font-family: "Cinzel", serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.timetable-table th:first-child {
+  background: linear-gradient(135deg, var(--gold), hsl(43, 75%, 35%));
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.timetable-day-cell {
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.subject-name {
+  display: block;
+  font-family: "Cinzel", serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.prof-name {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.room-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--gold), hsl(43, 75%, 38%));
+  color: white;
+  text-transform: uppercase;
+}
+
+.break-cell {
+  background: linear-gradient(
+    135deg,
+    rgba(184, 134, 11, 0.14),
+    rgba(184, 134, 11, 0.06)
+  );
+  font-family: "Cinzel", serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--gold);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  padding: 0;
+}
+
+.lab-cell {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 140, 60, 0.1),
+    rgba(0, 120, 50, 0.05)
+  );
+  border-left: 3px solid hsl(120, 60%, 42%);
+}
+
+.research-cell {
+  background: linear-gradient(
+    135deg,
+    rgba(100, 120, 200, 0.09),
+    rgba(80, 100, 180, 0.04)
+  );
+}
+
+.clickable-cell {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.clickable-cell:hover {
+  background-color: rgba(184, 134, 11, 0.1);
+}
+
+.mobile-time-label {
+  display: none;
+}
+
+.timetable-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.timetable-modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.timetable-modal {
+  background: var(--card);
+  width: 90%;
+  max-width: 500px;
+  border-radius: 12px;
+  border: 2px solid var(--gold);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transform: scale(1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.timetable-modal-header {
+  background: linear-gradient(135deg, var(--primary), hsl(0, 55%, 22%));
+  color: var(--primary-foreground);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--gold);
+}
+
+.timetable-modal-title {
+  font-family: "Cinzel", serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.timetable-close-modal {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.timetable-modal-body {
+  padding: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+  gap: 18px;
+}
+
+.detail-label {
+  color: var(--muted-foreground);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.detail-value {
+  font-weight: 700;
+  color: var(--foreground);
+  font-family: "Cinzel", serif;
+  text-align: right;
+}
+
+.advice-box {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background: white;
+  border-left: 6px solid #ccc;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.advice-title {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #777;
+  letter-spacing: 1px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.advice-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.mini-stat {
+  background: #f0f0f0;
+  padding: 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.mini-stat-val {
+  font-weight: 800;
+  font-size: 1.2rem;
+  display: block;
+}
+
+.mini-stat-lbl {
+  font-size: 0.75rem;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.status-Safe.advice-box {
+  border-color: #2e7d32;
+  background-color: rgba(46, 125, 50, 0.05);
+}
+
+.status-Safe .advice-text {
+  color: #2e7d32;
+}
+
+.status-Warning.advice-box {
+  border-color: #f57f17;
+  background-color: rgba(245, 127, 23, 0.05);
+}
+
+.status-Warning .advice-text {
+  color: #f57f17;
+}
+
+.status-Critical.advice-box {
+  border-color: #c62828;
+  background-color: rgba(198, 40, 40, 0.05);
+}
+
+.status-Critical .advice-text {
+  color: #c62828;
+}
+
+.timetable-loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--gold);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: timetable-spin 1s linear infinite;
+  margin: 10px auto;
+}
+
+@keyframes timetable-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile layout. Humanity saw tables on phones and still chose suffering. */
+@media (max-width: 900px) {
+  .timetable-table thead {
+    display: none;
+  }
+
+  .timetable-table,
+  .timetable-table tbody,
+  .timetable-table tr,
+  .timetable-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .timetable-table tr {
+    margin-bottom: 20px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .timetable-table td.timetable-day-cell {
+    background: linear-gradient(135deg, var(--gold), hsl(43, 75%, 35%));
+    color: white;
+    font-size: 1.2rem;
+    padding: 12px;
+    text-align: center;
+    border: none;
+  }
+
+  .timetable-table td {
+    text-align: left;
+    padding: 12px 16px;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 60px;
+  }
+
+  .timetable-table td:empty {
+    display: none;
+  }
+
+  .subject-name {
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+
+  .break-cell {
+    writing-mode: horizontal-tb;
+    transform: none;
+    text-align: center;
+    justify-content: center;
+    opacity: 0.5;
+    font-size: 0.8rem;
+    padding: 5px;
+  }
+
+  .mobile-time-label {
+    display: inline-block;
+    margin-right: 8px;
+    background: #eee;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+}
+.timetable-cell-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.status-Safe .advice-box {
+  border-color: #2e7d32;
+  background-color: rgba(46, 125, 50, 0.05);
+}
+
+.status-Safe .advice-text {
+  color: #2e7d32;
+}
+
+.status-Warning .advice-box {
+  border-color: #f57f17;
+  background-color: rgba(245, 127, 23, 0.05);
+}
+
+.status-Warning .advice-text {
+  color: #f57f17;
+}
+
+.status-Critical .advice-box {
+  border-color: #c62828;
+  background-color: rgba(198, 40, 40, 0.05);
+}
+
+.status-Critical .advice-text {
+  color: #c62828;
+}
+/* Professor Timetable */
+
+.professor-info {
+  text-align: center;
+  color: var(--muted-foreground);
+  font-style: italic;
+  margin-bottom: 24px;
+  font-size: 1.05rem;
+}
+
+.professor-timetable-container {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  width: 100%;
+  overflow: hidden;
+}
+
+.professor-timetable-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  table-layout: fixed;
+}
+
+.professor-timetable-table th:first-child {
+  width: 10%;
+}
+
+.professor-timetable-table th,
+.professor-timetable-table td {
+  border: 1px solid var(--border);
+  padding: 10px 6px;
+  text-align: center;
+  vertical-align: middle;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.professor-timetable-table th {
+  background: linear-gradient(135deg, var(--primary), hsl(0, 55%, 22%));
+  color: var(--primary-foreground);
+  font-family: "Cinzel", serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.professor-timetable-table th:first-child {
+  background: linear-gradient(135deg, var(--gold), hsl(43, 75%, 35%));
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.professor-subject-name {
+  display: block;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.classroom-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #00695c, #004d40);
+  color: white;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.professor-clickable-cell {
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.professor-clickable-cell:hover {
+  background-color: rgba(184, 134, 11, 0.08);
+  transform: scale(1.01);
+}
+
+.prof-lunch-cell {
+  background: rgba(184, 134, 11, 0.07);
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.professor-timetable-modal {
+  max-width: 520px;
+}
+
+@media (max-width: 900px) {
+  .professor-timetable-table thead {
+    display: none;
+  }
+
+  .professor-timetable-table,
+  .professor-timetable-table tbody,
+  .professor-timetable-table tr,
+  .professor-timetable-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .professor-timetable-table tr {
+    margin-bottom: 24px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  }
+
+  .professor-timetable-table td.time-header {
+    background: linear-gradient(135deg, var(--gold), hsl(43, 75%, 35%));
+    color: white;
+    font-size: 1.25rem;
+    padding: 14px;
+    text-align: center;
+    border: none;
+  }
+
+  .professor-timetable-table td {
+    text-align: left;
+    padding: 14px 18px;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+  }
+
+  .professor-timetable-table td:empty {
+    display: none;
+  }
+
+  .professor-subject-name {
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+  }
+
+  .classroom-tag {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+  }
+}
